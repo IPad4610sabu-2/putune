@@ -75,9 +75,7 @@
                                                                                       <% } %>     
        <% if (a) { %>  
 
-      .player.video-ambient-container  { 
-         box-shadow: 0 0 0em <%=color%>; 
-         }
+        #ambient-canvas {display: none !important}
         
                                                                                      <% } %>          
     
@@ -822,7 +820,7 @@ Speed: 1x
 		<div id="<%=sha384(inv_vid.videoId)%>" class="video-player-container">
  
  
-<video class="player video-ambient-container" id="video" style="border-radius: 16px;
+<video class="player" id="video" style="border-radius: 16px;
 box-sizing: border-box;
 min-width: 100%;
 display: block; !important;" autoplay controls   
@@ -874,7 +872,8 @@ display: block; !important;" autoplay controls
             
                                                            <% } %>         
                                                                            
-                                                             </video>
+</video>
+<canvas width="150" height="150" id="ambient-canvas"></canvas>
                                                              
                                                              <img loading="lazy" src="https://t.poketube.fun/t/rep.gif?video=<%=btoa(inv_vid.videoId)%>" style="border:0;width: 0;visibility: hidden;" id="video">
 <div class="pwp" style="display: flex;justify-content: center;align-items: center;flex-direction: row; column-gap: 3px;margin-top: -1em;max-height: 16px;" align="center">
@@ -928,7 +927,7 @@ display: block; !important;" autoplay controls
                                                                                                                          
            <div class="div_box">
          Video id : <%=inv_vid.videoId%> <br>
-       ImmersiveAmbientModecolor: <% if (lightOrDark(color) == "light") { %><%=color%> (color 1)<% } %><% if (lightOrDark(color) == "dark") { %> <%=color2%> (color 2) <% } %> <br>  
+       ImmersiveAmbientModecolor:<% if (lightOrDark(color) == "light") { %><%=color%> (color 1)<% } %><% if (lightOrDark(color) == "dark") { %> <%=color2%> (color 2) <% } %> <br>  
         Video Format :<% if (!qua) { %>  22 (720p) openh264 ( https://github.com/cisco/openh264) mp4a.40.2  | 44100Hz  <% } %>
       <% if (qua === "medium") { %>  18 (320p)  openh264 (https://github.com/cisco/openh264) mp4a.40.2 | 44100Hz  <% } %>       <br> 
        PokeTubeEncryptID: <%=sha384(inv_vid.videoId)%> <br>
@@ -1945,16 +1944,14 @@ a {
 		<div class="video-player-container" style="background-color:#000">
     <% if (lightOrDark(color) == "dark") { %>  
 
-<video class="player" id="video" style="border-radius: 6px;box-shadow: 0 10em 7em  <%=color2
-                                                        %>;" autoplay controls   
+<video class="player" id="video" style="border-radius: 6px;%>;" autoplay controls   
        
        poster="https://p.poketube.fun/https://i.ytimg.com/vi/<%=inv_vid.videoId%>/maxresdefault.jpg?v=607ddcd4">
         
                                                                                      <% } %>                
    <% if (lightOrDark(color) == "light") { %>  
 
-<video class="player" id="video" style="border-radius: 6px;box-shadow: 0 10em 7em <%=color
-                                                        %>;" autoplay controls   
+<video class="player" id="video" style="border-radius: 6px;%>;" autoplay controls   
        
        poster="https://p.poketube.fun/https://i.ytimg.com/vi/<%=inv_vid.videoId%>/maxresdefault.jpg?v=607ddcd4">
         
@@ -2738,3 +2735,76 @@ if (/[?&]autoplay=/.test(location.search)) {
 
 <% } catch (error) { %>
  <% } %>
+
+
+<!-- Ambient Mode, for PokeTube -->
+<script>
+let requestId;
+
+const loopStart = () => {
+  requestId = window.requestAnimationFrame(loopStart)
+}
+
+const loopCancel = () => {
+  window.cancelAnimationFrame(requestId)
+  requestId = undefined
+}
+
+const AMvideo = document.getElementById("video")
+const canvas = document.getElementById("ambient-canvas")
+const ctx = canvas.getContext("2d")
+    
+let step
+
+const draw = () => {
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+}
+
+
+const drawLoop = () => {
+  draw()
+  step = window.requestAnimationFrame(drawLoop)
+}
+
+const drawPause = () => {
+  window.cancelAnimationFrame(step)
+  step = undefined
+}
+
+const init = () => {
+  AMvideo.addEventListener("loadeddata", draw, false)
+  AMvideo.addEventListener("seeked", draw, false)
+  AMvideo.addEventListener("play", drawLoop, false)
+  AMvideo.addEventListener("pause", drawPause, false)
+  AMvideo.addEventListener("ended", drawPause, false)
+}
+
+const cleanup = () => {
+  AMvideo.removeEventListener("loadeddata", draw)
+  AMvideo.removeEventListener("seeked", draw)
+  AMvideo.removeEventListener("play", drawLoop)
+  AMvideo.removeEventListener("pause", drawPause)
+  AMvideo.removeEventListener("ended", drawPause)
+}
+
+window.addEventListener("load", init)
+window.addEventListener("unload", cleanup)
+</script>
+<style>
+.video-player-container, #video {
+  position: relative;
+  z-index: 0;
+}
+.popup {z-index: 1}
+#ambient-canvas {
+  width: 100%;
+  height: calc(100% - 18px);
+  position: absolute;
+  top: 0px;
+  border-radius: 18px;
+  filter: blur(20px);
+  transform: scale(1.1);
+  opacity: 0.3;
+  z-index: -1;
+}
+</style>
