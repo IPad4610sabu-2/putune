@@ -45,7 +45,9 @@ function toObject(arr) {
 
 // Gets Invidious instances
 const invInstanceList = [
-  "https://tube.kuylar.dev"
+  "https://tube.kuylar.dev",
+  "https://yewtu.be",
+  "https://invidious.fdn.fr"
 ];
 
 // Gets a random instance from the list

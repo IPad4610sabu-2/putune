@@ -34,6 +34,8 @@ const URL_WHITELIST = [
   "invidious.lidarshield.cloud",
   "invidious.epicsite.xyz",
   "invidious.esmailelbob.xyz",
+  "yewtu.be",
+  "invidious.fdn.fr"
 ];
 
 const app = express();

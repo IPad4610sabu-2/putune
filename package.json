@@ -39,7 +39,7 @@
     "node": "16.x"
   },
   "repository": {
-    "url": "https://codeberg.org/Ashley/poketube"
+    "url": "https://codeberg.org/Ashley/poke"
   },
   "license": "GPL-3.0-or-later",
   "keywords": [
