@@ -3,3 +3,5 @@ yarn.lock
 package-lock.json
 .env
 json.sqlite
+config.json
+docker-compose.yml
