@@ -589,8 +589,37 @@ background-color: #0000;
    position: sticky; 
    background:#0009; 
     top: 0;
+  
 }
+  #controls {
+    display: none;
+  }
 </style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Controls and high-res playback
+    //TODO - a
+    function startPlayback() {
+      aud.play();
+      vid.play();
+    }
+    let shouldPlay = 0;
+    const aud = document.getElementById("aud");
+    const vid = document.getElementById("video");
+    aud.addEventListener("canplay", () => {
+      console.log(`Loaded audio ${shouldPlay}`);
+      shouldPlay++;
+      if(shouldPlay >= 2)
+        startPlayback();
+    });
+    vid.addEventListener("canplay", () => {
+      console.log(`Loaded video ${shouldPlay}`);
+      shouldPlay++;
+      if(shouldPlay >= 2)
+        startPlayback();
+    });
+  })
+</script>
          <% if(shortsui) { %>
                                                        <script>
         // Function to apply styles after DOM has loaded
@@ -1014,10 +1043,15 @@ Offical Discord Server! :3
     
     
 		<div id="<%=sha384(inv_vid.videoId)%>" class="video-player-container">
-      <video class="player video-ambient-container" id="video" style="border-radius: 16px; box-sizing: border-box; min-width: 100%; display: block;" autoplay controls>
+      <% if (!qua) { //TODO - a %>
+        <audio id="aud" preload>
+          <source src="<%=u%>/latest_version?id=<%=inv_vid.videoId%>&itag=140&local=true" type="video/mp4"/>
+        </audio>
+      <% } %>
+      <video class="player video-ambient-container" id="video" style="border-radius: 16px; box-sizing: border-box; min-width: 100%; display: block;" preload>
       <% if (isvidious) { %>
         <% if (!qua) { %>
-          <source src="<%=u%>/latest_version?id=<%=inv_vid.videoId%>&itag=22&local=true" type="video/mp4; codecs=&quot;avc1.64001F, mp4a.40.2&quot;" label="hd720" selected="true">
+          <source src="<%=u%>/latest_version?id=<%=inv_vid.videoId%>&itag=136&local=true" type="video/mp4; codecs=&quot;avc1.64001F, mp4a.40.2&quot;" label="hd720" selected="true">
         <% } %>
         <% if (qua === "medium") { %>
           <source src="<%=u%>/latest_version?id=<%=inv_vid.videoId%>&itag=18&local=true" type="video/mp4; codecs=&quot;avc1.64001F, mp4a.40.2&quot;" label="sd360" selected="true">
@@ -1054,7 +1088,31 @@ Offical Discord Server! :3
         <track src="/api/subtitles?v=<%=inv_vid.videoId%>&h=<%= %>" label="<%=  video.Subtitles.Subtitle.language.replace("United States","Simplified - USA") %>" kind="subtitles">      
       <% } %>                                                       
     </video>
-      
+    <div id="controls">
+      <button id="play">play</button>
+      <button id="pause">pause</button>
+      <div>
+          <span>volume</span>
+          <input type="range" min="0" max="1" step="any" value="1" id="volume-slider">
+      </div>
+      <div>
+          <span>duration</span>
+          <input type="range" min="0" step="any" value="0" id="duration-slider">
+      </div>
+      <div>
+          <span>speed</span>
+          <select name="speed" id="speed-select">
+              <option value="0.25">0.25</option>
+              <option value="0.5">0.5</option>
+              <option value="0.75">0.75</option>
+              <option value="1" selected>1 (Normal)</option>
+              <option value="1.25">1.25</option>
+              <option value="1.5">1.5</option>
+              <option value="1.75">1.75</option>
+              <option value="2">2</option>
+          </select>              
+      </div>
+  </div>
     <% if (!a) { %>
       <canvas width="12" height="6" class="ambient-canvas" id="ambient-canvas-1"></canvas>
       <canvas width="12" height="6" class="ambient-canvas" id="ambient-canvas-2"></canvas>
@@ -2096,7 +2154,7 @@ const drawPause = () => {
 }
 
 const init = () => {
-  video.pause();video.play();
+  video.pause();
   AMvideo.addEventListener("play", drawStart, false)
   AMvideo.addEventListener("pause", drawPause, false)
   AMvideo.addEventListener("ended", drawPause, false)
@@ -3457,6 +3515,7 @@ window.addEventListener('load', () => {
  <% if (!optout) { %> 
           <script src="/static/data-mobile.js"></script>
  <% } %>
+ 
 </div>
  
  </body>
