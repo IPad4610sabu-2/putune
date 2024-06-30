@@ -593,6 +593,7 @@ background-color: #0000;
 }
   #controls {
     display: none;
+    margin-top: 15px;
   }
 </style>
 <script>
@@ -600,8 +601,13 @@ background-color: #0000;
     // Controls and high-res playback
     //TODO - a
     function startPlayback() {
-      aud.play();
-      vid.play();
+      try {
+        // Show controls
+        document.getElementById("controls").style.display = "block";
+        aud.play();
+        vid.play();
+      }
+      catch(e) { }
     }
     let shouldPlay = 0;
     const aud = document.getElementById("aud");
