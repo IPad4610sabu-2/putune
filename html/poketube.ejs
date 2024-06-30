@@ -593,6 +593,12 @@ background-color: #0000;
 }
   #controls {
     display: none;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 70px;
+  }
+  .video-player-container {
+    position: relative;
   }
 </style>
 <script>
@@ -600,8 +606,13 @@ background-color: #0000;
     // Controls and high-res playback
     //TODO - a
     function startPlayback() {
-      aud.play();
-      vid.play();
+      try {
+        // Show controls
+        document.getElementById("controls").style.display = "flex";
+        aud.play();
+        vid.play();
+      }
+      catch(e) { }
     }
     let shouldPlay = 0;
     const aud = document.getElementById("aud");
@@ -1043,10 +1054,13 @@ Offical Discord Server! :3
     
     
 		<div id="<%=sha384(inv_vid.videoId)%>" class="video-player-container">
+      
       <% if (!qua) { //TODO - a %>
         <audio id="aud" preload>
           <source src="<%=u%>/latest_version?id=<%=inv_vid.videoId%>&itag=140&local=true" type="video/mp4"/>
         </audio>
+      <% } else { %>
+        <audio id="aud"></audio>
       <% } %>
       <video class="player video-ambient-container" id="video" style="border-radius: 16px; box-sizing: border-box; min-width: 100%; display: block;" preload>
       <% if (isvidious) { %>
