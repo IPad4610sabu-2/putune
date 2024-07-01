@@ -650,6 +650,8 @@ background-color: #0000;
   }
 </style>
 <script>
+  const playSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>play-circle-outline</title><path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M10,16.5L16,12L10,7.5V16.5Z" /></svg>'
+  const pauseSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>pause-circle-outline</title><path d="M13,16V8H15V16H13M9,16V8H11V16H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" /></svg>'
   document.addEventListener("DOMContentLoaded", () => {
     //FIXME: saved playback intentionally overwritten
     localStorage.setItem(`progress-${new URLSearchParams(window.location.search).get('v')}`, 0);
@@ -658,13 +660,11 @@ background-color: #0000;
     let setTime = false
     const seekbar = document.getElementById("duration-slider")
     function startPlayback() {
-      try {
         
         // Prepare seekbar
         seekbar.max = vid.duration
         vid.addEventListener("timeupdate", (event) => {
             seekbar.value = event.target.currentTime
-            saveProgress()
         });
         seekbar.addEventListener("input", (event) => {
             console.log(event.target.value);
@@ -675,9 +675,19 @@ background-color: #0000;
         });
         // Show controls
         document.getElementById("controls").style.display = "flex";
-        
         aud.play();
         vid.play();
+        // Play/Pause
+        const playPauseButton = document.getElementById("play-pause")
+        playPauseButton.innerHTML = pauseSVG;
+        playPauseButton.addEventListener("click", () => {
+            if(!vid.paused) {
+              vid.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
+            }
+            else {
+              vid.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
+            }
+        });
         if(!setTime) {
           //FIXME: saved playback intentionally overwritten
           aud.currentTime = 0
@@ -685,8 +695,7 @@ background-color: #0000;
           seekbar.value = 0
           setTime = true
         }
-      }
-      catch(e) { }
+      
     }
     let shouldPlay = 0;
     const aud = document.getElementById("aud");
@@ -694,14 +703,14 @@ background-color: #0000;
     aud.addEventListener("canplay", () => {
       console.log(`Loaded audio ${shouldPlay}`);
       shouldPlay++;
-      if(shouldPlay >= 2) {
+      if(shouldPlay >= 1) {
         startPlayback();
       }
     });
     vid.addEventListener("canplay", () => {
       console.log(`Loaded video ${shouldPlay}`);
       shouldPlay++;
-      if(shouldPlay >= 2) {
+      if(shouldPlay >= 1) {
         startPlayback();
       }
     });
@@ -1179,7 +1188,7 @@ Offical Discord Server! :3
       <% } %>                                                       
     </video>
     <div id="controls"> <!-- TODO: CONTROLS -->
-      <button id="play" class="control-button">
+      <button id="play-pause" class="control-button">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>play-circle-outline</title><path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M10,16.5L16,12L10,7.5V16.5Z" /></svg>
       </button>
       
@@ -2236,7 +2245,6 @@ const drawPause = () => {
 }
 
 const init = () => {
-  video.pause();
   AMvideo.addEventListener("play", drawStart, false)
   AMvideo.addEventListener("pause", drawPause, false)
   AMvideo.addEventListener("ended", drawPause, false)
