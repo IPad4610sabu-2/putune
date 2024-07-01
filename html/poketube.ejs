@@ -651,14 +651,40 @@ background-color: #0000;
 </style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    //FIXME: saved playback intentionally overwritten
+    localStorage.setItem(`progress-${new URLSearchParams(window.location.search).get('v')}`, 0);
     // Controls and high-res playback
     //TODO - a
+    let setTime = false
+    const seekbar = document.getElementById("duration-slider")
     function startPlayback() {
       try {
+        
+        // Prepare seekbar
+        seekbar.max = vid.duration
+        vid.addEventListener("timeupdate", (event) => {
+            seekbar.value = event.target.currentTime
+            saveProgress()
+        });
+        seekbar.addEventListener("input", (event) => {
+            console.log(event.target.value);
+            vid.pause()
+            aud.pause()
+            aud.currentTime = event.target.value
+            vid.currentTime = event.target.value
+        });
         // Show controls
         document.getElementById("controls").style.display = "flex";
+        
         aud.play();
         vid.play();
+        if(!setTime) {
+          //FIXME: saved playback intentionally overwritten
+          aud.currentTime = 0
+          vid.currentTime = 0
+          seekbar.value = 0
+          setTime = true
+        }
       }
       catch(e) { }
     }
@@ -668,14 +694,16 @@ background-color: #0000;
     aud.addEventListener("canplay", () => {
       console.log(`Loaded audio ${shouldPlay}`);
       shouldPlay++;
-      if(shouldPlay >= 2)
+      if(shouldPlay >= 2) {
         startPlayback();
+      }
     });
     vid.addEventListener("canplay", () => {
       console.log(`Loaded video ${shouldPlay}`);
       shouldPlay++;
-      if(shouldPlay >= 2)
+      if(shouldPlay >= 2) {
         startPlayback();
+      }
     });
   })
 </script>
@@ -2245,13 +2273,7 @@ window.addEventListener("unload", cleanup)
 </style>
                  <% } %>
 
-<!-- BUNDLE -->
-<!-- BUNDLE -->
-<!-- BUNDLE -->
-<!-- BUNDLE --><script src="/static/app.bundle.js?version=08.05.2024&bundledate=080524_1657" > </script><!-- BUNDLE -->
-<!-- BUNDLE -->
-<!-- BUNDLE -->
-<!-- BUNDLE -->
+
  
 <% if(secure) { %>
   <% if(!dnt_val) { %>
@@ -3514,13 +3536,18 @@ if (userID) {
     // Optionally, you can set a default href or display an error message.
 }
   
-  
+const aud = document.getElementById("aud");
+const vid = document.getElementById("video");  
+console.log(vid)
 
 // Save and resume video progress
 const videoId = new URLSearchParams(window.location.search).get('v');
 const localStorageKey = `progress-${videoId}`;
 
+
+
 function saveProgress() {
+  console.log(`Saved progress @ ${video.currentTime}`)
   localStorage.setItem(localStorageKey, video.currentTime);
 }
 
@@ -3531,7 +3558,9 @@ function removeProgress() {
 function resumeProgress() {
   const progress = localStorage.getItem(localStorageKey);
   if (progress) {
-    video.currentTime = progress;
+    console.log(`Loaded progress @ ${progress.currentTime}`)
+    aud.currentTime = progress;
+    vid.currentTime = progress;
   }
 }
 
@@ -3541,7 +3570,10 @@ function resumeProgress() {
 
 
 video.addEventListener('timeupdate', () => {
+  console.log("Saving progress")
+  console.log("KILL ME KILL ME FUCKING KILL ME PLEASE I AM BEGGING YOU ALLAMDULILAH")
   if (Math.floor(video.currentTime) % 1 === 0) {
+    
     saveProgress();
   }
 });
@@ -3549,10 +3581,9 @@ video.addEventListener('timeupdate', () => {
 video.addEventListener('ended', () => {
   removeProgress();
 });
-
-window.addEventListener('load', () => {
-  resumeProgress();
-});
+console.log("I got there")
+window.addEventListener('DOMContentLoaded', () => {
+  throw 1;
 </script>
 
 
