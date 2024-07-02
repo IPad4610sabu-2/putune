@@ -721,6 +721,15 @@ background-color: #0000;
         toggleVideo()
       });
       video.addEventListener("click", toggleVideo);
+      video.addEventListener("dblclick", () => { 
+        video.controls = true;
+        video.requestFullscreen();
+      });
+      document.addEventListener("fullscreenchange", function() {
+        if(!document.fullscreen) {
+          video.controls = false;
+        }
+      });
     function startPlayback() {
         // Final prepare
         seekbar.max = video.duration
