@@ -695,7 +695,7 @@ background-color: #0000;
     // Prepare seekbar
     seekbar.max = video.duration
     video.addEventListener("timeupdate", (event) => {
-      seekbar.value = event.target.currentTime
+      seekbar.value = event.target.currentTime;
       const timestamps = document.getElementById("timestamps");
         timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
       });
@@ -714,23 +714,23 @@ background-color: #0000;
       playPauseButton.innerHTML = pauseSVG;
       function toggleVideo() {    
           if(!video.paused) {
-            console.log("Pausing")
             video.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
           }
           else {
-            console.log("Playing")
             video.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
           }
       }
-      console.log("aagaming")
       playPauseButton.addEventListener("click", () => {
         toggleVideo()
       });
       video.addEventListener("click", toggleVideo);
     function startPlayback() {
         // Show controls
-        aud.play();
-        vid.play();
+        try {
+          aud.play();
+          vid.play();
+        }
+        catch {}
         
         if(!setTime) {
           //FIXME: saved playback intentionally overwritten
