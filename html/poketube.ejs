@@ -648,13 +648,13 @@ background-color: #0000;
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   }
   input[type=range]::-moz-range-thumb {
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
     border: 1px solid #000000;
-    height: 40px;
-    width: 16px;
-    border-radius: 3px;
-    background: #ffffff;
+    height: 21px;
+    width: 21px;
+    border-radius: 20px;
+    background: var(--div-gradient);
     cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   }
   #timestamps {
     margin-right: 40px;
@@ -692,22 +692,19 @@ background-color: #0000;
     let setTime = false
     const seekbar = document.getElementById("duration-slider")
     const video = document.getElementById("video");
-    // Prepare seekbar
-    seekbar.max = video.duration
+    
     video.addEventListener("timeupdate", (event) => {
       seekbar.value = event.target.currentTime;
       const timestamps = document.getElementById("timestamps");
         timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
-      });
+    });
       seekbar.addEventListener("input", (event) => {
           video.pause()
           aud.pause()
           aud.currentTime = event.target.value
           video.currentTime = event.target.value
       });
-      // Timestamp
-      const timestamps = document.getElementById("timestamps");
-      timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+      
       // Play/Pause
       const playPauseButton = document.getElementById("play-pause");
       let disablePausing = false; // Hacky firefox workaround
@@ -725,6 +722,10 @@ background-color: #0000;
       });
       video.addEventListener("click", toggleVideo);
     function startPlayback() {
+        // Final prepare
+        seekbar.max = video.duration
+        const timestamps = document.getElementById("timestamps");
+        timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
         // Show controls
         try {
           aud.play();
