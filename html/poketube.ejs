@@ -659,6 +659,18 @@ background-color: #0000;
   #timestamps {
     margin-right: 40px;
   }
+  html:fullscreen video {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+  }
+  html:fullscreen *:not(html, video, body, ptd-app-ejs, .app, .watch-page, .primary, .video-player-container, #popupMenu, #popupMenu *) {
+    visibility: hidden !important;
+  }
 </style>
 <noscript>
   <style>
@@ -692,11 +704,15 @@ background-color: #0000;
     let setTime = false
     const seekbar = document.getElementById("duration-slider")
     const video = document.getElementById("video");
-    
+    let previousTimestamp = 0;
     video.addEventListener("timeupdate", (event) => {
       seekbar.value = event.target.currentTime;
       const timestamps = document.getElementById("timestamps");
-        timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+      timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+      if(event.target.currentTime - previousTimestamp >= 1 || event.target.currentTime - previousTimestamp <= -1) {
+        aud.currentTime = event.target.currentTime;
+      }
+      previousTimestamp = event.target.currentTime;
     });
       seekbar.addEventListener("input", (event) => {
           video.pause()
@@ -709,11 +725,16 @@ background-color: #0000;
       const playPauseButton = document.getElementById("play-pause");
       playPauseButton.innerHTML = pauseSVG;
       function toggleVideo() {    
-          if(!video.paused) {
-            video.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
+          if(document.getElementById("popupMenu").style.display == "none") {
+            if(!video.paused) {
+              video.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
+            }
+            else {
+              video.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
+            }
           }
           else {
-            video.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
+            document.getElementById("popupMenu").style.display = "none"
           }
       }
       playPauseButton.addEventListener("click", () => {
@@ -721,8 +742,7 @@ background-color: #0000;
       });
       video.addEventListener("click", toggleVideo);
       video.addEventListener("dblclick", () => { 
-        video.controls = true;
-        video.requestFullscreen();
+        document.documentElement.requestFullscreen();
       });
       document.getElementById("muteOption").addEventListener("click", () => {
         aud.volume == 0 ? aud.volume = 1 : aud.volume = 0;
@@ -732,8 +752,32 @@ background-color: #0000;
         video.currentTime > aud.currentTime ? aud.currentTime = video.currentTime : video.currentTime = aud.currentTime;
       });
       document.addEventListener("fullscreenchange", function() {
+        if(document.fullscreen) {
+          window.onscroll = function () { window.scrollTo(0, 0); };
+          document.documentElement.style.overflow = "hidden"
+          video.controls = true;
+        }
         if(!document.fullscreen) {
+          window.onscroll = null;
+          document.documentElement.style.overflow = null
           video.controls = false;
+        }
+      });
+      video.addEventListener("fullscreenchange", () => {
+        video.fullscreen = false;
+        document.exitFullscreen();
+      });
+      video.addEventListener("contextmenu", (event) => {
+        if(document.fullscreen) {
+          event.preventDefault()
+          const popupMenu = document.getElementById('popupMenu');
+          if (popupMenu) {
+            const xPosition = event.clientX + window.pageXOffset;
+            const yPosition = event.clientY + window.pageYOffset;
+            popupMenu.style.left = `${xPosition}px`;
+            popupMenu.style.top = `${yPosition}px`;
+          }
+          popupMenu.style.display = "block"
         }
       });
     function startPlayback() {
@@ -747,6 +791,12 @@ background-color: #0000;
         });
         aud.addEventListener("play", () => {
           vid.play(); playPauseButton.innerHTML = pauseSVG;
+        });
+        vid.addEventListener("pause", () => {
+          aud.pause(); playPauseButton.innerHTML = playSVG;
+        });
+        vid.addEventListener("play", () => {
+          aud.play(); playPauseButton.innerHTML = pauseSVG;
         });
         aud.addEventListener("timechange", () => {
           vid.currentTime = aud.currentTime;
@@ -1272,7 +1322,7 @@ Offical Discord Server! :3
       <div id="seekbar">
           <input type="range" min="0" step="any" value="0" id="duration-slider">
       </div>
-      <p id="timestamps">00:00/03:05</p>
+      <p id="timestamps">...</p>
       <!--
       <div>
         <span>volume</span>
@@ -1310,7 +1360,7 @@ Offical Discord Server! :3
 
 
       <a onclick="toggleTheaterMode()"" class="theather"><i class="fa-sharp fa-light fa-up-right-and-down-left-from-center"></i> Theater</a>
-      <a onclick="document.getElementById('video').requestFullscreen()"" class="theather"><i class="fa-sharp fa-light fa-up-right-and-down-left-from-center"></i> Full screen</a>
+      <a onclick="document.documentElement.requestFullscreen()" class="theather"><i class="fa-sharp fa-light fa-up-right-and-down-left-from-center"></i> Full screen</a>
                                                                         
 <%  if (inv.comments) { %> 
                 <input type="checkbox" class="hj" id="j" style="display:none">
