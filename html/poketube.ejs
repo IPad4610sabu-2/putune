@@ -716,14 +716,16 @@ background-color: #0000;
         // Play/Pause
         const playPauseButton = document.getElementById("play-pause")
         playPauseButton.innerHTML = pauseSVG;
-        playPauseButton.addEventListener("click", () => {
-            if(!vid.paused) {
+        function toggleVideo() {
+          if(!vid.paused) {
               vid.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
             }
             else {
               vid.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
             }
-        });
+        }
+        playPauseButton.addEventListener("click", toggleVideo);
+        vid.addEventListener("click", toggleVideo);
         if(!setTime) {
           //FIXME: saved playback intentionally overwritten
           aud.currentTime = 0
