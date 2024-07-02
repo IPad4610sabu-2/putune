@@ -691,40 +691,47 @@ background-color: #0000;
     //TODO - a
     let setTime = false
     const seekbar = document.getElementById("duration-slider")
-    function startPlayback() {
-        
-        // Prepare seekbar
-        seekbar.max = vid.duration
-        vid.addEventListener("timeupdate", (event) => {
-            seekbar.value = event.target.currentTime
-            const timestamps = document.getElementById("timestamps");
-            timestamps.innerText = `${csts(vid.currentTime)}/${csts(vid.duration)}`;
-        });
-        seekbar.addEventListener("input", (event) => {
-            vid.pause()
-            aud.pause()
-            aud.currentTime = event.target.value
-            vid.currentTime = event.target.value
-        });
-        // Timestamp
-        const timestamps = document.getElementById("timestamps");
+    const video = document.getElementById("video");
+    // Prepare seekbar
+    seekbar.max = video.duration
+    video.addEventListener("timeupdate", (event) => {
+      seekbar.value = event.target.currentTime
+      const timestamps = document.getElementById("timestamps");
         timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+      });
+      seekbar.addEventListener("input", (event) => {
+          video.pause()
+          aud.pause()
+          aud.currentTime = event.target.value
+          video.currentTime = event.target.value
+      });
+      // Timestamp
+      const timestamps = document.getElementById("timestamps");
+      timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+      // Play/Pause
+      const playPauseButton = document.getElementById("play-pause");
+      let disablePausing = false; // Hacky firefox workaround
+      playPauseButton.innerHTML = pauseSVG;
+      function toggleVideo() {    
+          if(!video.paused) {
+            console.log("Pausing")
+            video.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
+          }
+          else {
+            console.log("Playing")
+            video.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
+          }
+      }
+      console.log("aagaming")
+      playPauseButton.addEventListener("click", () => {
+        toggleVideo()
+      });
+      video.addEventListener("click", toggleVideo);
+    function startPlayback() {
         // Show controls
         aud.play();
         vid.play();
-        // Play/Pause
-        const playPauseButton = document.getElementById("play-pause")
-        playPauseButton.innerHTML = pauseSVG;
-        function toggleVideo() {
-          if(!vid.paused) {
-              vid.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
-            }
-            else {
-              vid.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
-            }
-        }
-        playPauseButton.addEventListener("click", toggleVideo);
-        vid.addEventListener("click", toggleVideo);
+        
         if(!setTime) {
           //FIXME: saved playback intentionally overwritten
           aud.currentTime = 0
