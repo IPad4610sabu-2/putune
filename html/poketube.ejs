@@ -707,7 +707,6 @@ background-color: #0000;
       
       // Play/Pause
       const playPauseButton = document.getElementById("play-pause");
-      let disablePausing = false; // Hacky firefox workaround
       playPauseButton.innerHTML = pauseSVG;
       function toggleVideo() {    
           if(!video.paused) {
@@ -725,6 +724,7 @@ background-color: #0000;
         video.controls = true;
         video.requestFullscreen();
       });
+      
       document.addEventListener("fullscreenchange", function() {
         if(!document.fullscreen) {
           video.controls = false;
@@ -735,6 +735,16 @@ background-color: #0000;
         seekbar.max = video.duration
         const timestamps = document.getElementById("timestamps");
         timestamps.innerText = `${csts(video.currentTime)}/${csts(video.duration)}`;
+        // Media controls fix
+        aud.addEventListener("pause", () => {
+          vid.pause(); playPauseButton.innerHTML = playSVG;
+        });
+        aud.addEventListener("play", () => {
+          vid.play(); playPauseButton.innerHTML = pauseSVG;
+        });
+        aud.addEventListener("timechange", () => {
+          vid.currentTime = aud.currentTime;
+        });
         // Show controls
         try {
           aud.play();
@@ -756,14 +766,16 @@ background-color: #0000;
     const vid = document.getElementById("video");
     aud.addEventListener("canplay", () => {
       shouldPlay++;
-      if(shouldPlay >= 1) {
+      if(shouldPlay >= 2) {
         startPlayback();
+        shouldPlay = 0;
       }
     });
     vid.addEventListener("canplay", () => {
       shouldPlay++;
-      if(shouldPlay >= 1) {
+      if(shouldPlay >= 2) {
         startPlayback();
+        shouldPlay = 0;
       }
     });
   })
