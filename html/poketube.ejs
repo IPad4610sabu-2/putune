@@ -701,7 +701,6 @@ background-color: #0000;
             timestamps.innerText = `${csts(vid.currentTime)}/${csts(vid.duration)}`;
         });
         seekbar.addEventListener("input", (event) => {
-            console.log(event.target.value);
             vid.pause()
             aud.pause()
             aud.currentTime = event.target.value
@@ -739,14 +738,12 @@ background-color: #0000;
     const aud = document.getElementById("aud");
     const vid = document.getElementById("video");
     aud.addEventListener("canplay", () => {
-      console.log(`Loaded audio ${shouldPlay}`);
       shouldPlay++;
       if(shouldPlay >= 1) {
         startPlayback();
       }
     });
     vid.addEventListener("canplay", () => {
-      console.log(`Loaded video ${shouldPlay}`);
       shouldPlay++;
       if(shouldPlay >= 1) {
         startPlayback();
@@ -3593,7 +3590,6 @@ if (userID) {
   
 const aud = document.getElementById("aud");
 const vid = document.getElementById("video");  
-console.log(vid)
 
 // Save and resume video progress
 const videoId = new URLSearchParams(window.location.search).get('v');
@@ -3613,7 +3609,6 @@ function removeProgress() {
 function resumeProgress() {
   const progress = localStorage.getItem(localStorageKey);
   if (progress) {
-    console.log(`Loaded progress @ ${progress.currentTime}`)
     aud.currentTime = progress;
     vid.currentTime = progress;
   }
@@ -3625,8 +3620,6 @@ function resumeProgress() {
 
 
 video.addEventListener('timeupdate', () => {
-  console.log("Saving progress")
-  console.log("KILL ME KILL ME FUCKING KILL ME PLEASE I AM BEGGING YOU ALLAMDULILAH")
   if (Math.floor(video.currentTime) % 1 === 0) {
     
     saveProgress();
@@ -3636,7 +3629,6 @@ video.addEventListener('timeupdate', () => {
 video.addEventListener('ended', () => {
   removeProgress();
 });
-console.log("I got there")
 window.addEventListener('DOMContentLoaded', () => {
   throw 1;
 </script>
