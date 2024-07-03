@@ -737,6 +737,15 @@ background-color: #0000;
       playPauseButton.addEventListener("click", () => {
         toggleVideo()
       });
+      setInterval(() => {
+        if(Math.round(video.currentTime) != Math.round(aud.currentTime)) {
+          video.pause(); aud.pause(); playPauseButton.innerHTML = playSVG;
+          video.currentTime > aud.currentTime ? aud.currentTime = video.currentTime : video.currentTime = aud.currentTime;
+          setTimeout(() => {
+            video.play(); aud.play(); playPauseButton.innerHTML = pauseSVG;
+          }, 800)
+        }
+      }, 1000)
       video.addEventListener("click", toggleVideo);
       video.addEventListener("dblclick", () => { 
         document.documentElement.requestFullscreen();
