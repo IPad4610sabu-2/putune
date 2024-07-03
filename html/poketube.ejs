@@ -671,6 +671,13 @@ background-color: #0000;
   html:fullscreen *:not(html, video, body, ptd-app-ejs, .app, .watch-page, .primary, .video-player-container, #popupMenu, #popupMenu *) {
     visibility: hidden !important;
   }
+  #nojs-high-res-warning {
+    background-color: #823434aa;
+    margin: 30px;
+    padding: 5px 20px;
+    border: 2px solid red;
+    border-radius: 10px;
+  }
 </style>
 <noscript>
   <style>
@@ -1282,6 +1289,13 @@ Offical Discord Server! :3
       <% } else { %>
         <audio id="aud"></audio>
       <% } %>
+      <noscript>
+        <% if (!qua) { %>
+          <div id="nojs-high-res-warning">
+            <p>Due to YouTube's recent changes on high resolution playback, it is sadly impossible to play high-resolution video with audio without client-side JavaScript enabled. Switch to SD quality or enable JavaScript to play your video with audio.</p>
+          </div>
+        <% } %>
+      </noscript>
       <video class="player video-ambient-container" id="video" style="border-radius: 16px; box-sizing: border-box; min-width: 100%; display: block;" preload>
       <% if (isvidious) { %>
         <% if (!qua) { %>
