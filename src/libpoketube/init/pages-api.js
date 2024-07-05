@@ -181,6 +181,29 @@ app.use("/sb/i/:v/:imagePath/:img", async function (req, res) {
     } catch {}
 });
 
+  app.get("/feeds/videos.xml", async (req, res) => {
+    const id = req.query.channel_id;
+
+    let url = `https://youtube.com/feeds/videos.xml?channel_id=${id}`;
+
+    let f = await modules.fetch(url, {
+      method: req.method,
+    });
+
+    f.body.pipe(res);
+  });
+
+ app.get("/api/improving-poke/getsugesstions", async (req, res) => {
+    const query = req.query.q;
+
+    let url = `https://invid-api.poketube.fun/api/v1/search/suggestions?q=${query}`;
+
+    let f = await modules.fetch(url, {
+      method: req.method,
+    });
+
+    f.body.pipe(res);
+  });
 
   app.get("/api/redirect", async (req, res) => {
     const red_url = atob(req.query.u);
