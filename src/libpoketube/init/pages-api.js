@@ -30,7 +30,7 @@ const pkg = require("../../../package.json");
 const os = require('os');
 const cnf = require("../../../config.json");
 const innertube = require("../libpoketube-youtubei-objects.json");
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 
 const verfull = "v24.1906-sho-MAJOR_UPDATE-stable-dev-nonLTS-git-MTcxODc5NDY3NQ==";
 const versmol = "v24.1906-sho"
@@ -235,7 +235,7 @@ app.use("/sb/i/:v/:imagePath/:img", async function (req, res) {
        const totalMemory = os.totalmem() / (1024 * 1024 * 1024); 
        const roundedMemory = totalMemory.toFixed(2); 
 
-exec('git rev-list HEAD -n 1 --abbrev-commit', (error, stdout, stderr) => {
+execSync('git rev-list HEAD -n 1 --abbrev-commit', (error, stdout, stderr) => {
   if (error || stderr) {
     console.error(`Error executing command: ${error || stderr}`);
     return;
@@ -247,10 +247,10 @@ exec('git rev-list HEAD -n 1 --abbrev-commit', (error, stdout, stderr) => {
     const response = {
       pt_version: {
        version:versmol,
-       version_full:verfull
+       version_full:verfull,
+       commit: latestCommitHash
       },
       branch,
-      commit: latestCommitHash,
       updatequote,
       relaseunixdate,
       vernum: versionnumber,
